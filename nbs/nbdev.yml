@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "popidd-sveil"
+  site-url: "https://integratedpathologyunit-icr.github.io/popidd-sveil"
+  description: "POPIDD's Sveil: A tool for anonymising histopathology slides"
+  repo-branch: main
+  repo-url: "https://github.com/IntegratedPathologyUnit-ICR/popidd-sveil"

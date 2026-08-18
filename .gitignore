@@ -150,3 +150,9 @@ checklink/cookies.txt
 
 # Quarto
 .quarto
+
+# Image files
+input/*.ndpi
+input/*.svs
+input/*.tif
+input/*.tiff
