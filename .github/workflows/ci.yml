@@ -41,7 +41,7 @@ jobs:
         run: uv sync --all-groups --locked
 
       - name: Run nbdev checks
-        run: uv run nbdev_prepare
+        run: uv run nbdev-prepare
 
       - name: Check for generated changes
         run: git diff --exit-code
