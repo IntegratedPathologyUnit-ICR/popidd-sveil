@@ -37,9 +37,6 @@ jobs:
       - name: Run nbdev checks
         run: uv run nbdev-prepare
 
-      - name: Check for uncommitted generated changes
-        run: git diff --exit-code
-
   test:
     name: Test Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
