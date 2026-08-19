@@ -846,6 +846,8 @@ def _description_identifies_label(
 # %% ../nbs/00_core.ipynb #0764edb7
 # Need to make sure that the first page (meant to be the macro of just tissue)
 # will NEVER have PID, otherwise it might be best to remove it !!!
+# Also consider the fact that the images tend to be stored as stripped
+# LZW-compressed images, not JPEG
 def find_svs_label_page(
     info: SlideInfo,
     relative_tolerance: float = 0.01,
@@ -1062,10 +1064,11 @@ def find_label_page(
         )
 
     if info.format is SlideFormat.SVS:
-        return find_svs_label_page(
-            info,
-            relative_tolerance,
-        )
+        raise UnsupportedSlideError("SVS support is still unfinished and experimental")
+        # return find_svs_label_page(
+        #     info,
+        #     relative_tolerance,
+        # )
 
     if info.format is SlideFormat.TIFF:
         return find_tiff_label_page(
