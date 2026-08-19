@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Detection and removal of label images from TIFF-based digital pathology slides.">
+
+<title>core – popidd-sveil</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d63a2c9c8df14b07662b36303925c8cc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="core – popidd-sveil">
+<meta property="og:description" content="Detection and removal of label images from TIFF-based digital pathology slides.">
+<meta property="og:image" content="https://integratedpathologyunit-icr.github.io/popidd-sveil/00_core_files/figure-html/cell-43-output-1.png">
+<meta property="og:site_name" content="popidd-sveil">
+<meta property="og:image:height" content="329">
+<meta property="og:image:width" content="1589">
+<meta name="twitter:title" content="core – popidd-sveil">
+<meta name="twitter:description" content="Detection and removal of label images from TIFF-based digital pathology slides.">
+<meta name="twitter:image" content="https://integratedpathologyunit-icr.github.io/popidd-sveil/00_core_files/figure-html/cell-43-output-1.png">
+<meta name="twitter:image-height" content="329">
+<meta name="twitter:image-width" content="1589">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">popidd-sveil</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./core.html">core</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">POPIDD’s Sveil</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./core.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">core</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#exceptions" id="toc-exceptions" class="nav-link" data-scroll-target="#exceptions">Exceptions</a>
+  <ul class="collapse">
+  <li><a href="#operationmode" id="toc-operationmode" class="nav-link" data-scroll-target="#operationmode">OperationMode</a></li>
+  <li><a href="#replacementimageerror" id="toc-replacementimageerror" class="nav-link" data-scroll-target="#replacementimageerror">ReplacementImageError</a></li>
+  <li><a href="#unsupportedlabelencodingerror" id="toc-unsupportedlabelencodingerror" class="nav-link" data-scroll-target="#unsupportedlabelencodingerror">UnsupportedLabelEncodingError</a></li>
+  <li><a href="#outputexistserror" id="toc-outputexistserror" class="nav-link" data-scroll-target="#outputexistserror">OutputExistsError</a></li>
+  <li><a href="#unsafesegmenterror" id="toc-unsafesegmenterror" class="nav-link" data-scroll-target="#unsafesegmenterror">UnsafeSegmentError</a></li>
+  <li><a href="#ambiguouslabelerror" id="toc-ambiguouslabelerror" class="nav-link" data-scroll-target="#ambiguouslabelerror">AmbiguousLabelError</a></li>
+  <li><a href="#labelnotfounderror" id="toc-labelnotfounderror" class="nav-link" data-scroll-target="#labelnotfounderror">LabelNotFoundError</a></li>
+  <li><a href="#unsupportedslideerror" id="toc-unsupportedslideerror" class="nav-link" data-scroll-target="#unsupportedslideerror">UnsupportedSlideError</a></li>
+  <li><a href="#sveilerror" id="toc-sveilerror" class="nav-link" data-scroll-target="#sveilerror">SveilError</a></li>
+  </ul></li>
+  <li><a href="#data-models" id="toc-data-models" class="nav-link" data-scroll-target="#data-models">Data Models</a>
+  <ul class="collapse">
+  <li><a href="#imagereplacement" id="toc-imagereplacement" class="nav-link" data-scroll-target="#imagereplacement">ImageReplacement</a></li>
+  <li><a href="#anonymizationresult" id="toc-anonymizationresult" class="nav-link" data-scroll-target="#anonymizationresult">AnonymizationResult</a></li>
+  <li><a href="#labellocation" id="toc-labellocation" class="nav-link" data-scroll-target="#labellocation">LabelLocation</a></li>
+  <li><a href="#slideinfo" id="toc-slideinfo" class="nav-link" data-scroll-target="#slideinfo">SlideInfo</a></li>
+  <li><a href="#pageinfo" id="toc-pageinfo" class="nav-link" data-scroll-target="#pageinfo">PageInfo</a></li>
+  <li><a href="#slideformat" id="toc-slideformat" class="nav-link" data-scroll-target="#slideformat">SlideFormat</a></li>
+  </ul></li>
+  <li><a href="#slide-inspection" id="toc-slide-inspection" class="nav-link" data-scroll-target="#slide-inspection">Slide Inspection</a>
+  <ul class="collapse">
+  <li><a href="#inspect_slide" id="toc-inspect_slide" class="nav-link" data-scroll-target="#inspect_slide">inspect_slide</a></li>
+  <li><a href="#slide_report" id="toc-slide_report" class="nav-link" data-scroll-target="#slide_report">slide_report</a></li>
+  <li><a href="#aspect_ratios_match" id="toc-aspect_ratios_match" class="nav-link" data-scroll-target="#aspect_ratios_match">aspect_ratios_match</a></li>
+  <li><a href="#group_pages_by_aspect_ratio" id="toc-group_pages_by_aspect_ratio" class="nav-link" data-scroll-target="#group_pages_by_aspect_ratio">group_pages_by_aspect_ratio</a></li>
+  </ul></li>
+  <li><a href="#pyramid-detection" id="toc-pyramid-detection" class="nav-link" data-scroll-target="#pyramid-detection">Pyramid Detection</a>
+  <ul class="collapse">
+  <li><a href="#find_pyramid_pages" id="toc-find_pyramid_pages" class="nav-link" data-scroll-target="#find_pyramid_pages">find_pyramid_pages</a></li>
+  <li><a href="#find_associated_pages" id="toc-find_associated_pages" class="nav-link" data-scroll-target="#find_associated_pages">find_associated_pages</a></li>
+  </ul></li>
+  <li><a href="#label-detection" id="toc-label-detection" class="nav-link" data-scroll-target="#label-detection">Label Detection</a>
+  <ul class="collapse">
+  <li><a href="#is_colour_page" id="toc-is_colour_page" class="nav-link" data-scroll-target="#is_colour_page">is_colour_page</a></li>
+  <li><a href="#find_ndpi_label_page" id="toc-find_ndpi_label_page" class="nav-link" data-scroll-target="#find_ndpi_label_page">find_ndpi_label_page</a></li>
+  <li><a href="#find_svs_label_page" id="toc-find_svs_label_page" class="nav-link" data-scroll-target="#find_svs_label_page">find_svs_label_page</a></li>
+  <li><a href="#find_tiff_label_page" id="toc-find_tiff_label_page" class="nav-link" data-scroll-target="#find_tiff_label_page">find_tiff_label_page</a></li>
+  <li><a href="#find_label_page" id="toc-find_label_page" class="nav-link" data-scroll-target="#find_label_page">find_label_page</a></li>
+  <li><a href="#describe_label_candidate" id="toc-describe_label_candidate" class="nav-link" data-scroll-target="#describe_label_candidate">describe_label_candidate</a></li>
+  <li><a href="#validate_label_page_for_replacement" id="toc-validate_label_page_for_replacement" class="nav-link" data-scroll-target="#validate_label_page_for_replacement">validate_label_page_for_replacement</a></li>
+  </ul></li>
+  <li><a href="#replacement-generation" id="toc-replacement-generation" class="nav-link" data-scroll-target="#replacement-generation">Replacement Generation</a>
+  <ul class="collapse">
+  <li><a href="#create_blank_jpeg" id="toc-create_blank_jpeg" class="nav-link" data-scroll-target="#create_blank_jpeg">create_blank_jpeg</a></li>
+  <li><a href="#prepare_replacement" id="toc-prepare_replacement" class="nav-link" data-scroll-target="#prepare_replacement">prepare_replacement</a></li>
+  <li><a href="#validate_replacement" id="toc-validate_replacement" class="nav-link" data-scroll-target="#validate_replacement">validate_replacement</a></li>
+  <li><a href="#apply_replacement" id="toc-apply_replacement" class="nav-link" data-scroll-target="#apply_replacement">apply_replacement</a></li>
+  </ul></li>
+  <li><a href="#file-modification" id="toc-file-modification" class="nav-link" data-scroll-target="#file-modification">File Modification</a>
+  <ul class="collapse">
+  <li><a href="#prepare_output_path" id="toc-prepare_output_path" class="nav-link" data-scroll-target="#prepare_output_path">prepare_output_path</a></li>
+  <li><a href="#default_output_path" id="toc-default_output_path" class="nav-link" data-scroll-target="#default_output_path">default_output_path</a></li>
+  <li><a href="#validate_processed_slide" id="toc-validate_processed_slide" class="nav-link" data-scroll-target="#validate_processed_slide">validate_processed_slide</a></li>
+  <li><a href="#validate_blank_page" id="toc-validate_blank_page" class="nav-link" data-scroll-target="#validate_blank_page">validate_blank_page</a></li>
+  <li><a href="#label_detection_method" id="toc-label_detection_method" class="nav-link" data-scroll-target="#label_detection_method">label_detection_method</a></li>
+  <li><a href="#remove_label" id="toc-remove_label" class="nav-link" data-scroll-target="#remove_label">remove_label</a></li>
+  </ul></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/IntegratedPathologyUnit-ICR/popidd-sveil/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="core.html.md"><i class="bi bi-file-code"></i>CommonMark</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">core</h1>
+</div>
+
+<div>
+  <div class="description">
+    Detection and removal of label images from TIFF-based digital pathology slides.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+</section>
+<section id="exceptions" class="level2">
+<h2 class="anchored" data-anchor-id="exceptions">Exceptions</h2>
+<p>Core exception types used by the public API.</p>
+<pre><code>/home/runner/work/popidd-sveil/popidd-sveil/.venv/lib/python3.12/site-packages/fastcore/docscrape.py:259: UserWarning: Unknown section See Also
+  else: warn(msg)</code></pre>
+<hr>
+<section id="operationmode" class="level3">
+<h3 class="anchored" data-anchor-id="operationmode">OperationMode</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> OperationMode(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    args:VAR_POSITIONAL, kwds:VAR_KEYWORD</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Specify how an anonymised slide is written.</em></p>
+<hr>
+</section>
+<section id="replacementimageerror" class="level3">
+<h3 class="anchored" data-anchor-id="replacementimageerror">ReplacementImageError</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ReplacementImageError(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    args:VAR_POSITIONAL, kwargs:VAR_KEYWORD</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Raised when a replacement image cannot be created or validated.</em></p>
+<hr>
+</section>
+<section id="unsupportedlabelencodingerror" class="level3">
+<h3 class="anchored" data-anchor-id="unsupportedlabelencodingerror">UnsupportedLabelEncodingError</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> UnsupportedLabelEncodingError(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    args:VAR_POSITIONAL, kwargs:VAR_KEYWORD</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Raised when a label page uses an unsupported storage layout.</em></p>
+<hr>
+</section>
+<section id="outputexistserror" class="level3">
+<h3 class="anchored" data-anchor-id="outputexistserror">OutputExistsError</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> OutputExistsError(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    args:VAR_POSITIONAL, kwargs:VAR_KEYWORD</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Raised when an output path exists and overwriting is disabled.</em></p>
+<hr>
+</section>
+<section id="unsafesegmenterror" class="level3">
+<h3 class="anchored" data-anchor-id="unsafesegmenterror">UnsafeSegmentError</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> UnsafeSegmentError(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    args:VAR_POSITIONAL, kwargs:VAR_KEYWORD</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Raised when an image segment cannot be modified safely.</em></p>
+<hr>
+</section>
+<section id="ambiguouslabelerror" class="level3">
+<h3 class="anchored" data-anchor-id="ambiguouslabelerror">AmbiguousLabelError</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> AmbiguousLabelError(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    args:VAR_POSITIONAL, kwargs:VAR_KEYWORD</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Raised when multiple plausible label pages are detected.</em></p>
+<hr>
+</section>
+<section id="labelnotfounderror" class="level3">
+<h3 class="anchored" data-anchor-id="labelnotfounderror">LabelNotFoundError</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> LabelNotFoundError(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    args:VAR_POSITIONAL, kwargs:VAR_KEYWORD</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Raised when no candidate label or macro page can be detected.</em></p>
+<hr>
+</section>
+<section id="unsupportedslideerror" class="level3">
+<h3 class="anchored" data-anchor-id="unsupportedslideerror">UnsupportedSlideError</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> UnsupportedSlideError(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    args:VAR_POSITIONAL, kwargs:VAR_KEYWORD</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Raised when a slide format or file extension is unsupported.</em></p>
+<hr>
+</section>
+<section id="sveilerror" class="level3">
+<h3 class="anchored" data-anchor-id="sveilerror">SveilError</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> SveilError(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    args:VAR_POSITIONAL, kwargs:VAR_KEYWORD</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Base exception for errors raised by <code>popidd_sveil</code>.</em></p>
+</section>
+</section>
+<section id="data-models" class="level2">
+<h2 class="anchored" data-anchor-id="data-models">Data Models</h2>
+<p>Lightweight dataclasses representing slide and page metadata, and anonymisation results.</p>
+<hr>
+<section id="imagereplacement" class="level3">
+<h3 class="anchored" data-anchor-id="imagereplacement">ImageReplacement</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ImageReplacement(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    page_index:<span class="bu">int</span>, offset:<span class="bu">int</span>, allocated_bytes:<span class="bu">int</span>, encoded_image:<span class="bu">bytes</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Describe an encoded image prepared for binary replacement.</em></p>
+<hr>
+</section>
+<section id="anonymizationresult" class="level3">
+<h3 class="anchored" data-anchor-id="anonymizationresult">AnonymizationResult</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> AnonymizationResult(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    source_path:Path, output_path:Path, <span class="bu">format</span>:SlideFormat, mode:OperationMode, label_page:<span class="bu">int</span>, detection_method:<span class="bu">str</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    original_bytes:<span class="bu">int</span>, replacement_bytes:<span class="bu">int</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Summarise a completed label-removal operation.</em></p>
+<hr>
+</section>
+<section id="labellocation" class="level3">
+<h3 class="anchored" data-anchor-id="labellocation">LabelLocation</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> LabelLocation(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    page_index:<span class="bu">int</span>, detection_method:<span class="bu">str</span>, offsets:<span class="bu">tuple</span>[<span class="bu">int</span>, ...], byte_counts:<span class="bu">tuple</span>[<span class="bu">int</span>, ...]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Describe the storage location of a detected label page.</em></p>
+<hr>
+</section>
+<section id="slideinfo" class="level3">
+<h3 class="anchored" data-anchor-id="slideinfo">SlideInfo</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> SlideInfo(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    path:Path, <span class="bu">format</span>:SlideFormat, byte_order:<span class="bu">str</span>, is_bigtiff:<span class="bu">bool</span>, pages:<span class="bu">tuple</span>[PageInfo, ...]</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Store structural metadata for a TIFF-based pathology slide.</em></p>
+<hr>
+</section>
+<section id="pageinfo" class="level3">
+<h3 class="anchored" data-anchor-id="pageinfo">PageInfo</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> PageInfo(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    index:<span class="bu">int</span>, shape:<span class="bu">tuple</span>[<span class="bu">int</span>, ...], height:<span class="bu">int</span>, width:<span class="bu">int</span>, aspect_ratio:<span class="bu">float</span>, description:<span class="bu">str</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    new_subfile_type:<span class="bu">int</span> <span class="op">|</span> <span class="va">None</span>, compression:<span class="bu">str</span>, photometric:<span class="bu">str</span>, samples_per_pixel:<span class="bu">int</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    bits_per_sample:<span class="bu">tuple</span>[<span class="bu">int</span>, ...], magnification:<span class="bu">float</span> <span class="op">|</span> <span class="va">None</span>, offsets:<span class="bu">tuple</span>[<span class="bu">int</span>, ...],</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    byte_counts:<span class="bu">tuple</span>[<span class="bu">int</span>, ...]</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Store structural metadata for a TIFF page.</em></p>
+<hr>
+</section>
+<section id="slideformat" class="level3">
+<h3 class="anchored" data-anchor-id="slideformat">SlideFormat</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> SlideFormat(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    args:VAR_POSITIONAL, kwds:VAR_KEYWORD</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Identify the supported TIFF-based slide formats.</em></p>
+</section>
+</section>
+<section id="slide-inspection" class="level2">
+<h2 class="anchored" data-anchor-id="slide-inspection">Slide Inspection</h2>
+<p>Utilities to inspect TIFF slides and obtain structured metadata via <code>inspect_slide</code>.</p>
+<hr>
+<section id="inspect_slide" class="level3">
+<h3 class="anchored" data-anchor-id="inspect_slide">inspect_slide</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> inspect_slide(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    path:<span class="bu">str</span> <span class="op">|</span> Path, <span class="co"># Path to an SVS, NDPI, TIF, or TIFF slide.</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>SlideInfo: <span class="co"># Structural metadata for the slide and its TIFF pages.</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Inspect a TIFF-based slide without decoding its full image pyramid.</em></p>
+<hr>
+</section>
+<section id="slide_report" class="level3">
+<h3 class="anchored" data-anchor-id="slide_report">slide_report</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> slide_report(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    path:<span class="bu">str</span> <span class="op">|</span> Path, <span class="co"># Path to the slide to inspect.</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">str</span>: <span class="co"># Multiline report describing the slide and each TIFF page.</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Create a human-readable report of slide and page metadata.</em></p>
+<hr>
+</section>
+<section id="aspect_ratios_match" class="level3">
+<h3 class="anchored" data-anchor-id="aspect_ratios_match">aspect_ratios_match</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> aspect_ratios_match(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    first:<span class="bu">float</span>, <span class="co"># First aspect ratio.</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    second:<span class="bu">float</span>, <span class="co"># Second aspect ratio.</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    relative_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># Maximum relative difference accepted as a match.</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">bool</span>: <span class="co"># `True` when the ratios match and are both positive.</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Test whether two aspect ratios agree within a relative tolerance.</em></p>
+<hr>
+</section>
+<section id="group_pages_by_aspect_ratio" class="level3">
+<h3 class="anchored" data-anchor-id="group_pages_by_aspect_ratio">group_pages_by_aspect_ratio</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> group_pages_by_aspect_ratio(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    pages:Sequence[PageInfo], <span class="co"># Page metadata to group.</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    relative_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># Maximum relative difference between matching aspect ratios.</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">tuple</span>[<span class="bu">tuple</span>[PageInfo, ...], ...]: <span class="co"># Groups of pages with similar aspect ratios.</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Group TIFF pages with similar aspect ratios.</em></p>
+<p>Pages are considered in descending order of pixel area. Each page is assigned to the first group whose reference aspect ratio matches according to <code>aspect_ratios_match</code>.</p>
+</section>
+</section>
+<section id="pyramid-detection" class="level2">
+<h2 class="anchored" data-anchor-id="pyramid-detection">Pyramid Detection</h2>
+<p>Helpers to group pages by aspect ratio and identify the TIFF pyramid pages.</p>
+<hr>
+<section id="find_pyramid_pages" class="level3">
+<h3 class="anchored" data-anchor-id="find_pyramid_pages">find_pyramid_pages</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_pyramid_pages(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    info:SlideInfo, <span class="co"># Slide metadata returned by `inspect_slide`.</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    relative_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># Maximum relative difference between matching aspect ratios.</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">tuple</span>[PageInfo, ...]: <span class="co"># Pages classified as pyramid levels.</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Identify the dominant aspect-ratio group as the image pyramid.</em></p>
+<p>The group containing the largest number of pages is selected. Pixel area is used to resolve ties between groups of equal size.</p>
+<hr>
+</section>
+<section id="find_associated_pages" class="level3">
+<h3 class="anchored" data-anchor-id="find_associated_pages">find_associated_pages</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_associated_pages(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    info:SlideInfo, <span class="co"># Slide metadata returned by `inspect_slide`.</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    relative_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># Maximum relative difference used for pyramid grouping.</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">tuple</span>[PageInfo, ...]: <span class="co"># Pages outside the dominant pyramid group.</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Return pages that do not belong to the detected image pyramid.</em></p>
+</section>
+</section>
+<section id="label-detection" class="level2">
+<h2 class="anchored" data-anchor-id="label-detection">Label Detection</h2>
+<p>Format-specific heuristics to detect label/macro pages (<code>find_label_page</code> delegates to these helpers).</p>
+<hr>
+<section id="is_colour_page" class="level3">
+<h3 class="anchored" data-anchor-id="is_colour_page">is_colour_page</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> is_colour_page(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    page:PageInfo, <span class="co"># Page metadata to inspect.</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">bool</span>: <span class="co"># `True` when the page has at least three samples per pixel and</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>uses a recognised colour photometric interpretation.</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Determine whether a page represents a recognised colour image.</em></p>
+<hr>
+</section>
+<section id="find_ndpi_label_page" class="level3">
+<h3 class="anchored" data-anchor-id="find_ndpi_label_page">find_ndpi_label_page</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_ndpi_label_page(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    info:SlideInfo, <span class="co"># NDPI slide metadata returned by `inspect_slide`.</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    relative_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># Maximum relative difference used for pyramid grouping.</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>PageInfo: <span class="co"># Metadata for the detected label or macro page.</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Detect the colour label or macro page in an NDPI slide.</em></p>
+<p>The detector excludes pages belonging to the dominant image pyramid and selects the unique remaining colour page.</p>
+<hr>
+</section>
+<section id="find_svs_label_page" class="level3">
+<h3 class="anchored" data-anchor-id="find_svs_label_page">find_svs_label_page</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_svs_label_page(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    info:SlideInfo, <span class="co"># SVS slide metadata returned by `inspect_slide`.</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    relative_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># Maximum relative difference used for pyramid grouping.</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>PageInfo: <span class="co"># Metadata for the detected label page.</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Detect a probable label page in an SVS slide.</em></p>
+<p>Detection prioritises a colour associated page with TIFF NewSubfileType 1, followed by an explicit label description and finally a unique eligible colour page outside the image pyramid.</p>
+<hr>
+</section>
+<section id="find_tiff_label_page" class="level3">
+<h3 class="anchored" data-anchor-id="find_tiff_label_page">find_tiff_label_page</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_tiff_label_page(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    info:SlideInfo, <span class="co"># TIFF slide metadata returned by `inspect_slide`.</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    relative_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># Maximum relative difference used for pyramid grouping.</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>PageInfo: <span class="co"># Metadata for the detected label page.</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Detect a probable label page in a generic TIFF slide.</em></p>
+<p>Detection first considers pages explicitly described as labels. If none are found, the unique colour page outside the dominant image pyramid is selected.</p>
+<hr>
+</section>
+<section id="find_label_page" class="level3">
+<h3 class="anchored" data-anchor-id="find_label_page">find_label_page</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_label_page(</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    info:SlideInfo, <span class="co"># Slide metadata returned by `inspect_slide`.</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    relative_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># Maximum relative difference used for aspect-ratio grouping.</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>PageInfo: <span class="co"># Metadata for the detected label or macro page.</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Detect the label or macro page using format-specific rules.</em></p>
+<hr>
+</section>
+<section id="describe_label_candidate" class="level3">
+<h3 class="anchored" data-anchor-id="describe_label_candidate">describe_label_candidate</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> describe_label_candidate(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    path:<span class="bu">str</span> <span class="op">|</span> Path, <span class="co"># Path to the slide to inspect.</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    relative_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># Maximum relative difference used for aspect-ratio grouping.</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">str</span>: <span class="co"># Human-readable description of the selected page.</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Describe the label page selected for a slide.</em></p>
+<hr>
+</section>
+<section id="validate_label_page_for_replacement" class="level3">
+<h3 class="anchored" data-anchor-id="validate_label_page_for_replacement">validate_label_page_for_replacement</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> validate_label_page_for_replacement(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    page:PageInfo, <span class="co"># Candidate label page to validate.</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Validate that a label page supports in-place JPEG replacement.</em></p>
+<p>The current replacement implementation requires a colour page stored as a single JPEG or old-style JPEG segment.</p>
+</section>
+</section>
+<section id="replacement-generation" class="level2">
+<h2 class="anchored" data-anchor-id="replacement-generation">Replacement Generation</h2>
+<p>Helpers to validate label encoding and to produce an appropriately-sized blank JPEG replacement.</p>
+<hr>
+<section id="create_blank_jpeg" class="level3">
+<h3 class="anchored" data-anchor-id="create_blank_jpeg">create_blank_jpeg</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_blank_jpeg(</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    width:<span class="bu">int</span>, <span class="co"># Image width in pixels.</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    height:<span class="bu">int</span>, <span class="co"># Image height in pixels.</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    maximum_bytes:<span class="bu">int</span>, <span class="co"># Maximum permitted size of the encoded JPEG.</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    colour:<span class="bu">tuple</span>[<span class="bu">int</span>, <span class="bu">int</span>, <span class="bu">int</span>]<span class="op">=</span>(<span class="dv">255</span>, <span class="dv">255</span>, <span class="dv">255</span>), <span class="co"># RGB colour used to fill the replacement image.</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">bytes</span>: <span class="co"># Encoded JPEG data no larger than `maximum_bytes`.</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Encode a blank RGB JPEG within a fixed byte allocation.</em></p>
+<hr>
+</section>
+<section id="prepare_replacement" class="level3">
+<h3 class="anchored" data-anchor-id="prepare_replacement">prepare_replacement</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> prepare_replacement(</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    page:PageInfo, <span class="co"># Detected label page returned by `find_label_page`.</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>ImageReplacement: <span class="co"># Encoded blank image and its target storage location.</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Prepare a blank encoded replacement for a label page.</em></p>
+<hr>
+</section>
+<section id="validate_replacement" class="level3">
+<h3 class="anchored" data-anchor-id="validate_replacement">validate_replacement</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> validate_replacement(</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    path:<span class="bu">str</span> <span class="op">|</span> Path, <span class="co"># Path to the slide that will be modified.</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    replacement:ImageReplacement, <span class="co"># Prepared replacement returned by `prepare_replacement`.</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Validate a prepared replacement against its target slide.</em></p>
+<hr>
+</section>
+<section id="apply_replacement" class="level3">
+<h3 class="anchored" data-anchor-id="apply_replacement">apply_replacement</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> apply_replacement(</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    path:<span class="bu">str</span> <span class="op">|</span> Path, <span class="co"># Path to the slide to modify.</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    replacement:ImageReplacement, <span class="co"># Prepared replacement returned by `prepare_replacement`.</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Overwrite a label segment with an encoded replacement image.</em></p>
+<p>Remaining bytes in the original allocation are overwritten with zeros after the replacement JPEG.</p>
+</section>
+</section>
+<section id="file-modification" class="level2">
+<h2 class="anchored" data-anchor-id="file-modification">File Modification</h2>
+<p>Functions that perform in-place binary updates safely and with padding.</p>
+<hr>
+<section id="prepare_output_path" class="level3">
+<h3 class="anchored" data-anchor-id="prepare_output_path">prepare_output_path</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> prepare_output_path(</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    source:<span class="bu">str</span> <span class="op">|</span> Path, <span class="co"># Path to the source slide.</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    mode:OperationMode <span class="op">|</span> <span class="bu">str</span><span class="op">=&lt;</span>OperationMode.COPY: <span class="st">'copy'</span><span class="op">&gt;</span>, <span class="co"># Whether to create a copy or modify the source in place.</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    output:<span class="bu">str</span> <span class="op">|</span> Path <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>, <span class="co"># Explicit destination used in copy mode. If omitted,</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>`default_output_path` determines the destination.</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    overwrite:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># Whether an existing destination may be replaced.</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>Path: <span class="co"># Path that should be modified or created.</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Validate and resolve the path to a processed slide.</em></p>
+<hr>
+</section>
+<section id="default_output_path" class="level3">
+<h3 class="anchored" data-anchor-id="default_output_path">default_output_path</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> default_output_path(</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    path:<span class="bu">str</span> <span class="op">|</span> Path, <span class="co"># Source slide path.</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>Path: <span class="co"># Default output path in the source directory.</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Construct the default path for an anonymised copy.</em></p>
+<p>The returned filename inserts <code>".sveil"</code> before the original file extension.</p>
+<hr>
+</section>
+<section id="validate_processed_slide" class="level3">
+<h3 class="anchored" data-anchor-id="validate_processed_slide">validate_processed_slide</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> validate_processed_slide(</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    path:<span class="bu">str</span> <span class="op">|</span> Path, <span class="co"># Path to the processed slide.</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    page_index:<span class="bu">int</span>, <span class="co"># Zero-based index of the replaced page.</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Verify that a processed TIFF page remains decodable.</em></p>
+<hr>
+</section>
+<section id="validate_blank_page" class="level3">
+<h3 class="anchored" data-anchor-id="validate_blank_page">validate_blank_page</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> validate_blank_page(</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    path:<span class="bu">str</span> <span class="op">|</span> Path, <span class="co"># Path to the processed slide.</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    page_index:<span class="bu">int</span>, <span class="co"># Zero-based index of the replaced page.</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    minimum_mean:<span class="bu">float</span><span class="op">=</span><span class="fl">250.0</span>, <span class="co"># Minimum permitted mean pixel value.</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="va">None</span>:</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Verify that a processed page decodes as a near-white image.</em></p>
+<hr>
+</section>
+<section id="label_detection_method" class="level3">
+<h3 class="anchored" data-anchor-id="label_detection_method">label_detection_method</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> label_detection_method(</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    info:SlideInfo, <span class="co"># Metadata for the inspected slide.</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    page:PageInfo, <span class="co"># Label page selected by `find_label_page`.</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">str</span>: <span class="co"># Stable identifier for the detection rule.</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Describe the rule that selected a label page.</em></p>
+<hr>
+</section>
+<section id="remove_label" class="level3">
+<h3 class="anchored" data-anchor-id="remove_label">remove_label</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> remove_label(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    path:<span class="bu">str</span> <span class="op">|</span> Path, <span class="co"># Path to the source slide.</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    mode:OperationMode <span class="op">|</span> <span class="bu">str</span><span class="op">=&lt;</span>OperationMode.COPY: <span class="st">'copy'</span><span class="op">&gt;</span>, <span class="co"># Whether to create an anonymised copy or modify the source.</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    output:<span class="bu">str</span> <span class="op">|</span> Path <span class="op">|</span> <span class="va">None</span><span class="op">=</span><span class="va">None</span>, <span class="co"># Explicit destination in copy mode. If omitted,</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>`default_output_path` determines the destination.</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    overwrite:<span class="bu">bool</span><span class="op">=</span><span class="va">False</span>, <span class="co"># Whether an existing destination may be replaced.</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    relative_tolerance:<span class="bu">float</span><span class="op">=</span><span class="fl">0.01</span>, <span class="co"># Maximum relative difference used for aspect-ratio grouping.</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>AnonymizationResult: <span class="co"># Summary of the completed operation.</span></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Replace the detected label page with a blank image.</em></p>
+<p>Copy mode preserves the source slide and writes an anonymised copy. In-place mode modifies the source slide directly.</p>
+</section>
+</section>
+<section id="examples" class="level2">
+<h2 class="anchored" data-anchor-id="examples">Examples</h2>
+<div id="2a474ba5" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> report_detection(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    path: <span class="bu">str</span> <span class="op">|</span> Path,</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Print a diagnostic summary of label-page detection.</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="co">    ----------</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="co">    path</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="co">        Path to the slide to inspect.</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="co">    -------</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="co">    None</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a><span class="co">    See Also</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a><span class="co">    --------</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a><span class="co">    `slide_report`</span></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="co">    `find_pyramid_pages`</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a><span class="co">    `find_associated_pages`</span></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a><span class="co">    `find_label_page`</span></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>    info <span class="op">=</span> inspect_slide(path)</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>    pyramid <span class="op">=</span> find_pyramid_pages(info)</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>    associated <span class="op">=</span> find_associated_pages(info)</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> find_label_page(info)</span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Format:"</span>, info.<span class="bu">format</span>.value)</span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(</span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Pyramid:"</span>,</span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>        [page.index <span class="cf">for</span> page <span class="kw">in</span> pyramid],</span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(</span>
+<span id="cb40-34"><a href="#cb40-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Associated:"</span>,</span>
+<span id="cb40-35"><a href="#cb40-35" aria-hidden="true" tabindex="-1"></a>        [page.index <span class="cf">for</span> page <span class="kw">in</span> associated],</span>
+<span id="cb40-36"><a href="#cb40-36" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-37"><a href="#cb40-37" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Selected label:"</span>, label.index)</span>
+<span id="cb40-38"><a href="#cb40-38" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(</span>
+<span id="cb40-39"><a href="#cb40-39" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Detection method:"</span>,</span>
+<span id="cb40-40"><a href="#cb40-40" aria-hidden="true" tabindex="-1"></a>        label_detection_method(info, label),</span>
+<span id="cb40-41"><a href="#cb40-41" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb40-42"><a href="#cb40-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-43"><a href="#cb40-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> page <span class="kw">in</span> associated:</span>
+<span id="cb40-44"><a href="#cb40-44" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(</span>
+<span id="cb40-45"><a href="#cb40-45" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"Page </span><span class="sc">{</span>page<span class="sc">.</span>index<span class="sc">}</span><span class="ss">: "</span></span>
+<span id="cb40-46"><a href="#cb40-46" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"</span><span class="sc">{</span>page<span class="sc">.</span>width<span class="sc">}</span><span class="ss">×</span><span class="sc">{</span>page<span class="sc">.</span>height<span class="sc">}</span><span class="ss">, "</span></span>
+<span id="cb40-47"><a href="#cb40-47" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"ratio=</span><span class="sc">{</span>page<span class="sc">.</span>aspect_ratio<span class="sc">:.3f}</span><span class="ss">, "</span></span>
+<span id="cb40-48"><a href="#cb40-48" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"subfiletype=</span><span class="sc">{</span>page<span class="sc">.</span>new_subfile_type<span class="sc">}</span><span class="ss">, "</span></span>
+<span id="cb40-49"><a href="#cb40-49" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"photometric=</span><span class="sc">{</span>page<span class="sc">.</span>photometric<span class="sc">}</span><span class="ss">, "</span></span>
+<span id="cb40-50"><a href="#cb40-50" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"compression=</span><span class="sc">{</span>page<span class="sc">.</span>compression<span class="sc">}</span><span class="ss">, "</span></span>
+<span id="cb40-51"><a href="#cb40-51" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"segments=</span><span class="sc">{</span><span class="bu">len</span>(page.offsets)<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb40-52"><a href="#cb40-52" aria-hidden="true" tabindex="-1"></a>        )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="1c2b0af8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(slide_report(image_path))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Path: ../input/pid.ndpi
+Format: ndpi
+Byte order: &lt;
+BigTIFF: False
+Pages: 8
+
+Page 0
+  Shape: (39168, 30720, 3)
+  Dimensions: 30720 × 39168
+  Aspect ratio: 0.784314
+  Description: ''
+  NewSubfileType: None
+  Magnification: 40.0
+  Compression: JPEG
+  Photometric: YCBCR
+  Samples per pixel: 3
+  Bits per sample: (8,)
+  Segments: 39168
+  Encoded bytes: 156706015
+
+Page 1
+  Shape: (19584, 15360, 3)
+  Dimensions: 15360 × 19584
+  Aspect ratio: 0.784314
+  Description: ''
+  NewSubfileType: None
+  Magnification: 20.0
+  Compression: JPEG
+  Photometric: YCBCR
+  Samples per pixel: 3
+  Bits per sample: (8,)
+  Segments: 19584
+  Encoded bytes: 34674486
+
+Page 2
+  Shape: (9792, 7680, 3)
+  Dimensions: 7680 × 9792
+  Aspect ratio: 0.784314
+  Description: ''
+  NewSubfileType: None
+  Magnification: 10.0
+  Compression: JPEG
+  Photometric: YCBCR
+  Samples per pixel: 3
+  Bits per sample: (8,)
+  Segments: 9792
+  Encoded bytes: 8267640
+
+Page 3
+  Shape: (4896, 3840, 3)
+  Dimensions: 3840 × 4896
+  Aspect ratio: 0.784314
+  Description: ''
+  NewSubfileType: None
+  Magnification: 5.0
+  Compression: JPEG
+  Photometric: YCBCR
+  Samples per pixel: 3
+  Bits per sample: (8,)
+  Segments: 4896
+  Encoded bytes: 2179197
+
+Page 4
+  Shape: (2448, 1920, 3)
+  Dimensions: 1920 × 2448
+  Aspect ratio: 0.784314
+  Description: ''
+  NewSubfileType: None
+  Magnification: 2.5
+  Compression: JPEG
+  Photometric: YCBCR
+  Samples per pixel: 3
+  Bits per sample: (8,)
+  Segments: 2448
+  Encoded bytes: 583742
+
+Page 5
+  Shape: (1224, 960, 3)
+  Dimensions: 960 × 1224
+  Aspect ratio: 0.784314
+  Description: ''
+  NewSubfileType: None
+  Magnification: 1.25
+  Compression: JPEG
+  Photometric: YCBCR
+  Samples per pixel: 3
+  Bits per sample: (8,)
+  Segments: 1224
+  Encoded bytes: 149445
+
+Page 6
+  Shape: (648, 1890, 3)
+  Dimensions: 1890 × 648
+  Aspect ratio: 2.916667
+  Description: ''
+  NewSubfileType: None
+  Magnification: -1.0
+  Compression: JPEG
+  Photometric: YCBCR
+  Samples per pixel: 3
+  Bits per sample: (8,)
+  Segments: 1
+  Encoded bytes: 117300
+
+Page 7
+  Shape: (205, 600, 1)
+  Dimensions: 600 × 205
+  Aspect ratio: 2.926829
+  Description: ''
+  NewSubfileType: None
+  Magnification: -2.0
+  Compression: NONE
+  Photometric: RGB
+  Samples per pixel: 1
+  Bits per sample: (8,)
+  Segments: 1
+  Encoded bytes: 123000</code></pre>
+</div>
+</div>
+<div id="ef5fc995" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>report_detection(image_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Format: ndpi
+Pyramid: [0, 1, 2, 3, 4, 5]
+Associated: [6, 7]
+Selected label: 6
+Detection method: ndpi-aspect-ratio-and-colour
+Page 6: 1890×648, ratio=2.917, subfiletype=None, photometric=YCBCR, compression=JPEG, segments=1
+Page 7: 600×205, ratio=2.927, subfiletype=None, photometric=RGB, compression=NONE, segments=1</code></pre>
+</div>
+</div>
+<div id="f36d56dc" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>source <span class="op">=</span> image_path</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>source_info <span class="op">=</span> inspect_slide(source)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>source_label <span class="op">=</span> find_label_page(source_info)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> tifffile.TiffFile(source) <span class="im">as</span> slide:</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    before <span class="op">=</span> slide.pages[source_label.index].asarray()</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> TemporaryDirectory() <span class="im">as</span> directory:</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> Path(directory) <span class="op">/</span> source.name</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> remove_label(</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>        source,</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>        mode<span class="op">=</span><span class="st">"copy"</span>,</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>        output<span class="op">=</span>output,</span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> tifffile.TiffFile(output) <span class="im">as</span> slide:</span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>        after <span class="op">=</span> slide.pages[result.label_page].asarray()</span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a>    fig, axes <span class="op">=</span> plt.subplots(</span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>        <span class="dv">1</span>,</span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>        <span class="dv">2</span>,</span>
+<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a>        figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="dv">5</span>),</span>
+<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].imshow(before)</span>
+<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].set_title(<span class="ss">f"Before</span><span class="ch">\n</span><span class="ss">Page </span><span class="sc">{</span>source_label<span class="sc">.</span>index<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb45-28"><a href="#cb45-28" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].axis(<span class="st">"off"</span>)</span>
+<span id="cb45-29"><a href="#cb45-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-30"><a href="#cb45-30" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">1</span>].imshow(after)</span>
+<span id="cb45-31"><a href="#cb45-31" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">1</span>].set_title(<span class="ss">f"After</span><span class="ch">\n</span><span class="ss">Page </span><span class="sc">{</span>result<span class="sc">.</span>label_page<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb45-32"><a href="#cb45-32" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">1</span>].axis(<span class="st">"off"</span>)</span>
+<span id="cb45-33"><a href="#cb45-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-34"><a href="#cb45-34" aria-hidden="true" tabindex="-1"></a>    plt.tight_layout()</span>
+<span id="cb45-35"><a href="#cb45-35" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="00_core_files/figure-html/cell-43-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/integratedpathologyunit-icr\.github\.io\/popidd-sveil");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/IntegratedPathologyUnit-ICR/popidd-sveil/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
