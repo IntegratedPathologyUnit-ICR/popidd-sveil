@@ -53,6 +53,7 @@ from dataclasses import dataclass
 from enum import Enum
 from io import BytesIO
 from pathlib import Path
+from typing import cast
 
 import tifffile
 from PIL import Image
@@ -441,7 +442,9 @@ def inspect_slide(path: str | Path) -> SlideInfo:
     with tifffile.TiffFile(path) as slide:
         pages = []
 
-        for index, page in enumerate(slide.pages):
+        for index, page_or_frame in enumerate(slide.pages):
+            page = cast(tifffile.TiffPage, page_or_frame)
+
             height = int(page.imagelength)
             width = int(page.imagewidth)
 
